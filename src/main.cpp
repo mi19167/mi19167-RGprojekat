@@ -64,7 +64,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Fishes", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -95,16 +95,17 @@ int main()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
-    // build and compile shaders
     // -------------------------
-    Shader shaderK("resources/shaders/kocka.vs", "resources/shaders/kocka.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
     Shader shaderGeometry("resources/shaders/geometry.vs", "resources/shaders/geometry.fs");
     Shader shaderLighting("resources/shaders/lighting.vs", "resources/shaders/lighting.fs");
     Shader shaderLightBox("resources/shaders/lightBox.vs", "resources/shaders/lightBox.fs");
 
+    Shader ourShader("resources/shaders/model.vs", "resources/shaders/model.fs");
 
+    Shader shader("resources/shaders/naPodu.vs", "resources/shaders/naPodu.fs");
+    Shader shaderPod("resources/shaders/podloga.vs", "resources/shaders/podloga.fs");
     // load models
     // -----------
     Model riba(FileSystem::getPath("resources/objects/fish/fish.obj"));
@@ -126,37 +127,37 @@ int main()
     glGenFramebuffers(1, &gBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
     unsigned int gPosition, gNormal, gAlbedoSpec;
-    // position color buffer
+    //
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-    // normal color buffer
+    //
     glGenTextures(1, &gNormal);
     glBindTexture(GL_TEXTURE_2D, gNormal);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-    // color + specular color buffer
+    //
     glGenTextures(1, &gAlbedoSpec);
     glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
-    // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+    //
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);
-    // create and attach depth buffer (renderbuffer)
+    //
     unsigned int rboDepth;
     glGenRenderbuffers(1, &rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    // finally check if framebuffer is complete
+    //
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -181,14 +182,12 @@ int main()
         lightColors.push_back(glm::vec3(rColor, gColor, bColor));
     }
 
-    // shader configuration
     // --------------------
     shaderLighting.use();
     shaderLighting.setInt("gPosition", 0);
     shaderLighting.setInt("gNormal", 1);
     shaderLighting.setInt("gAlbedoSpec", 2);
 
-    Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
 
     // load models
     // -----------
@@ -206,12 +205,8 @@ int main()
     pointLight.linear = 0.09f;
     pointLight.quadratic = 0.032f;
 
-    // build and compile shaders
-    // -------------------------
-    Shader shader("resources/shaders/naPodu.vs", "resources/shaders/naPodu.fs");
-    Shader shaderPod("resources/shaders/podloga.vs", "resources/shaders/podloga.fs");
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
+
     // ------------------------------------------------------------------
     float cubeVertices[] = {
             // positions          // texture Coords
@@ -401,11 +396,6 @@ int main()
 
     // shader configuration
     // --------------------
-    shaderK.use();
-    shader.setInt("texture1", 0);
-
-    // shader configuration
-    // --------------------
     shaderPod.use();
     shader.use();
     shader.setInt("texture1", 0);
@@ -436,7 +426,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // draw scene as normal
-        // 1. geometry pass: render scene's geometry/color data into gbuffer
+        // 1. geometry pass
         // -----------------------------------------------------------------
         glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -456,7 +446,7 @@ int main()
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
+        // 2. lighting pass
         // -----------------------------------------------------------------------------------------------------------------------
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderLighting.use();
@@ -484,10 +474,8 @@ int main()
         // 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
         // ----------------------------------------------------------------------------------
         glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-        // blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-        // the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the
-        // depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        //
         glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -507,8 +495,6 @@ int main()
         }
 
 
-
-        //STAROO
         // draw objects
         shader.use();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -521,19 +507,12 @@ int main()
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
-//
+
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-//        // floor
-//        glDisable(GL_CULL_FACE); //culling
-//        glBindVertexArray(planeVAO);
-//        glBindTexture(GL_TEXTURE_2D, floorTexture);
-//        model = glm::mat4(1.0f);
-//        shaderPod.setMat4("model", model);
-//        glDrawArrays(GL_TRIANGLES, 0, 6);
-        // vegetation
+
         glBindVertexArray(transparentVAO);
         //glEnable(GL_CULL_FACE);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
@@ -594,9 +573,9 @@ int main()
 
 
         // draw skybox as last
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        glDepthFunc(GL_LEQUAL);
         skyboxShader.use();
-        view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+        view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", projection);
         // skybox cube
@@ -605,7 +584,7 @@ int main()
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
-        glDepthFunc(GL_LESS); // set depth function back to default
+        glDepthFunc(GL_LESS);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -758,12 +737,11 @@ void processInput(GLFWwindow *window)
     }
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
+
     glViewport(0, 0, width, height);
 }
 
@@ -833,14 +811,7 @@ unsigned int loadTexture(char const * path)
     return textureID;
 }
 
-// loads a cubemap texture from 6 individual texture faces
-// order:
-// +X (right)
-// -X (left)
-// +Y (top)
-// -Y (bottom)
-// +Z (front)
-// -Z (back)
+
 // -------------------------------------------------------
 unsigned int loadCubemap(vector<std::string> faces)
 {
