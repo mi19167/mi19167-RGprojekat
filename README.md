@@ -1,6 +1,7 @@
 # mi19167-RGprojekat
 Projekat iz Racunarkse grafike
-Autor: Ivana Neskovic
+ 
+# Autor: Ivana Neskovic
 
 # Uputstvo:
 1. Main se nalazi u src/main.cpp
