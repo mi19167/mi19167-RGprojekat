@@ -14,5 +14,5 @@ Projekat iz Racunarkse grafike
 
 # Implementirane oblasi:
 
-Grupa A: Cubemaps
-Grupa B: Deffered Shading
+ Grupa A: Cubemaps
+ Grupa B: Deffered Shading
