@@ -12,3 +12,7 @@ Projekat iz Racunarkse grafike
 6. B -> Blinn-Phong model ostvetljenja
 7. ESC ->izlaz
 
+# Implementirane oblasi:
+
+Grupa A: Cubemaps
+Grupa B: Deffered Shading
