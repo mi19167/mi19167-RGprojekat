@@ -16,3 +16,7 @@ Projekat iz Racunarkse grafike
 
 1. Grupa A: Cubemaps
 2. Grupa B: Deffered Shading
+
+# Demonstraciju projekta mozete videti na sledecem linku:
+
+https://youtu.be/LSSKPD1g8ys
