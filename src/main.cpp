@@ -29,7 +29,7 @@ bool blinn = false;
 bool blinnKeyPressed = false;
 
 // camera
-Camera camera(glm::vec3(0.6f, 0.7f, 9.0f));
+Camera camera(glm::vec3(0.4f, 1.0f, 7.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -119,6 +119,7 @@ int main()
     objectPositions.push_back(glm::vec3(-5.0,  0.3,  -3.0));
     objectPositions.push_back(glm::vec3( 2.0,  0.3,  -5.0));
     objectPositions.push_back(glm::vec3( 5.0,  0.3,  -3.0));
+
 
 
     // configure g-buffer framebuffer
