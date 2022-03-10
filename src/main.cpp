@@ -22,6 +22,8 @@ unsigned int loadCubemap(vector<std::string> faces);
 void renderQuad();
 void renderCube();
 
+Shader &drawFishFetchShader(Shader &shaderGeometry, Model &riba, const vector<glm::vec3> &objectPositions, glm::mat4 &modelDS);
+
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -439,14 +441,8 @@ int main()
         shaderGeometry.use();
         shaderGeometry.setMat4("projectionDS", projectionDS);
         shaderGeometry.setMat4("viewDS", viewDS);
-        for (unsigned int i = 0; i < objectPositions.size(); i++)
-        {
-            modelDS = glm::mat4(1.0f);
-            modelDS = glm::translate(modelDS, objectPositions[i]);
-            modelDS = glm::scale(modelDS, glm::vec3(0.5f));
-            shaderGeometry.setMat4("modelDS", modelDS);
-            riba.Draw(shaderGeometry);
-        }
+
+        shaderGeometry = drawFishFetchShader(shaderGeometry, riba, objectPositions, modelDS);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // 2. lighting pass
@@ -604,6 +600,18 @@ int main()
 
     glfwTerminate();
     return 0;
+}
+
+Shader &drawFishFetchShader(Shader &shaderGeometry, Model &riba, const vector<glm::vec3> &objectPositions, glm::mat4 &modelDS) {
+    for (unsigned int i = 0; i < objectPositions.size(); i++)
+    {
+        modelDS = glm::mat4(1.0f);
+        modelDS = glm::translate(modelDS, objectPositions[i]);
+        modelDS = glm::scale(modelDS, glm::vec3(0.5f));
+        shaderGeometry.setMat4("modelDS", modelDS);
+        riba.Draw(shaderGeometry);
+    }
+    return shaderGeometry;
 }
 
 unsigned int cubeVAO = 0;
