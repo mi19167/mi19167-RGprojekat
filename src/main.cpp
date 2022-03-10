@@ -112,8 +112,18 @@ int main()
     Shader shaderPod("resources/shaders/podloga.vs", "resources/shaders/podloga.fs");
 
     Model riba(FileSystem::getPath("resources/objects/fish/fish.obj"));
+    // load models
+    // -----------
     std::vector<glm::vec3> objectPositions;
-    loadFishObject();
+    objectPositions.push_back(glm::vec3(1.0,  0.3, -7.0));
+    objectPositions.push_back(glm::vec3( -0.7,  0.3, -3.0));
+    objectPositions.push_back(glm::vec3( -4.0,  0.3, -3.0));
+    objectPositions.push_back(glm::vec3(-3.0,  0.3,  2.0));
+    objectPositions.push_back(glm::vec3( 0.0,  0.3,  0.0));
+    objectPositions.push_back(glm::vec3( 5.0,  0.3,  0.0));
+    objectPositions.push_back(glm::vec3(-5.0,  0.3,  -3.0));
+    objectPositions.push_back(glm::vec3( 2.0,  0.3,  -5.0));
+    objectPositions.push_back(glm::vec3( 5.0,  0.3,  -3.0));
 
     // configure g-buffer framebuffer
     // ------------------------------
@@ -595,21 +605,6 @@ int main()
 
     glfwTerminate();
     return 0;
-}
-
-void loadFishObject() {
-    // load models
-    // -----------
-    std::vector<glm::vec3> objectPositions;
-    objectPositions.push_back(glm::vec3(1.0,  0.3, -7.0));
-    objectPositions.push_back(glm::vec3( -0.7,  0.3, -3.0));
-    objectPositions.push_back(glm::vec3( -4.0,  0.3, -3.0));
-    objectPositions.push_back(glm::vec3(-3.0,  0.3,  2.0));
-    objectPositions.push_back(glm::vec3( 0.0,  0.3,  0.0));
-    objectPositions.push_back(glm::vec3( 5.0,  0.3,  0.0));
-    objectPositions.push_back(glm::vec3(-5.0,  0.3,  -3.0));
-    objectPositions.push_back(glm::vec3( 2.0,  0.3,  -5.0));
-    objectPositions.push_back(glm::vec3( 5.0,  0.3,  -3.0));
 }
 
 unsigned int cubeVAO = 0;
