@@ -35,12 +35,16 @@ add_subdirectory(libs/imgui)
 add_definitions(${OPENGL_DEFINITIONS})
 
 add_library(STB_IMAGE libs/stb_image.cpp)
+
+#gcov config
+add_definitions(-fprofile-arcs -ftest-coverage)
+
 set_source_files_properties(libs/stb_image.cpp include/stb_image.h
         PROPERTIES
         COMPILE_FLAGS
         "-Wno-shift-negative-value -Wno-implicit-fallthrough")
 
-set(LIBS glfw glad OpenGL::GL X11 Xrandr Xinerama Xi Xxf86vm Xcursor dl pthread freetype ${ASSIMP_LIBRARIES} STB_IMAGE imgui)
+set(LIBS glfw glad OpenGL::GL X11 Xrandr Xinerama Xi Xxf86vm Xcursor dl pthread freetype ${ASSIMP_LIBRARIES} STB_IMAGE imgui gcov)
 
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
@@ -50,8 +54,7 @@ include_directories(${CMAKE_BINARY_DIR}/configuration)
 include_directories(include/)
 add_executable(${PROJECT_NAME}
         ${SOURCES})
-
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS})  
 
 # set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${PROJECT_NAME}")
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
