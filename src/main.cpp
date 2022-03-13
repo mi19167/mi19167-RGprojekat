@@ -17,10 +17,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-unsigned int loadTexture(const char *path);
-unsigned int loadCubemap(vector<std::string> faces);
+auto loadTexture(const char *path) -> unsigned int;
+auto loadCubemap(vector<std::string> faces) -> unsigned int;
 void renderQuad();
 void renderCube();
+
+void loadFishObject();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -51,7 +53,7 @@ struct PointLight{
     float quadratic;
 };
 
-int main()
+auto main() -> int
 {
     // glfw: initialize and configure
     // ------------------------------
@@ -66,8 +68,8 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Fishes", NULL, NULL);
-    if (window == NULL)
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Fishes", nullptr, nullptr);
+    if (window == nullptr)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -108,9 +110,10 @@ int main()
 
     Shader shader("resources/shaders/naPodu.vs", "resources/shaders/naPodu.fs");
     Shader shaderPod("resources/shaders/podloga.vs", "resources/shaders/podloga.fs");
+
+    Model riba(FileSystem::getPath("resources/objects/fish/fish.obj"));
     // load models
     // -----------
-    Model riba(FileSystem::getPath("resources/objects/fish/fish.obj"));
     std::vector<glm::vec3> objectPositions;
     objectPositions.push_back(glm::vec3(1.0,  0.3, -7.0));
     objectPositions.push_back(glm::vec3( -0.7,  0.3, -3.0));
@@ -122,8 +125,6 @@ int main()
     objectPositions.push_back(glm::vec3( 2.0,  0.3,  -5.0));
     objectPositions.push_back(glm::vec3( 5.0,  0.3,  -3.0));
 
-
-
     // configure g-buffer framebuffer
     // ------------------------------
     unsigned int gBuffer;
@@ -133,21 +134,21 @@ int main()
     //
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
     //
     glGenTextures(1, &gNormal);
     glBindTexture(GL_TEXTURE_2D, gNormal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
     //
     glGenTextures(1, &gAlbedoSpec);
     glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
@@ -777,7 +778,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------
-unsigned int loadTexture(char const * path)
+auto loadTexture(char const * path) -> unsigned int
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -816,7 +817,7 @@ unsigned int loadTexture(char const * path)
 
 
 // -------------------------------------------------------
-unsigned int loadCubemap(vector<std::string> faces)
+auto loadCubemap(vector<std::string> faces) -> unsigned int
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
